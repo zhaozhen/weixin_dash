@@ -30,6 +30,17 @@ const Error404 = resolve => {
   }); 
 };
 
+const Main = resolve => {
+  require.ensure(['../components/page/Main.vue'], () => {
+      resolve(require('../components/page/Main.vue'));
+  }); 
+};
+
+const Home = resolve => {
+  require.ensure(['../components/common/Home.vue'], () => {
+      resolve(require('../components/common/Home.vue'));
+  }); 
+};
 
 const router = new Router({
   mode: 'history',
@@ -52,6 +63,16 @@ const router = new Router({
       name: 'register',
       component: Register 
     },
+    {
+      path: '/main',
+      component: Home,
+      children:[
+          {
+              path: '/',
+              component: Main
+          }
+      ]
+  },
     {
       path: '*',
       name: 'error',

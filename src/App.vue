@@ -12,6 +12,8 @@ export default {
 </script>
 
 <style>
+@import "../static/css/main.css";
+@import "../static/css/color-dark.css"; 
  #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -19,5 +21,5 @@ export default {
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
-} 
+}  
 </style>

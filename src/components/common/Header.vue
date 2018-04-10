@@ -23,14 +23,14 @@
         },
         computed:{
             username(){
-                let username = localStorage.getItem('ms_username');
+                let username = localStorage.getItem('username');
                 return username ? username : this.name;
             }
         },
         methods:{
             handleCommand(command) {
                 if(command == 'loginout'){
-                    localStorage.removeItem('ms_username')
+                    localStorage.removeItem('username')
                     this.$router.push('/login');
                 }
             }
@@ -39,13 +39,16 @@
 </script>
 <style scoped>
     .header {
-        position: relative;
+        position: absolute;
         box-sizing: border-box;
         width: 100%;
         height: 70px;
         font-size: 22px;
         line-height: 70px;
         color: #fff;
+        /* position:fixed; */
+        /* /* z-index:999; */
+         top:0; 
     }
     .header .logo{
         float: left;
