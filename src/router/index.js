@@ -24,21 +24,66 @@ const Register = resolve => {
   });
 };
 
-const Error404 = resolve => {
-  require.ensure(['../components/404.vue'], () => {
-      resolve(require('../components/404.vue'));
+
+
+const Home = resolve => {
+  require.ensure(['../components/Home.vue'], () => {
+      resolve(require('../components/Home.vue'));
+  }); 
+};
+
+const ECharts = resolve => {
+  require.ensure(['../components/charts/echarts.vue'], () => {
+      resolve(require('../components/charts/echarts.vue'));
+  }); 
+};
+
+
+const Form = resolve => {
+  require.ensure(['../components/nav1/Form.vue'], () => {
+      resolve(require('../components/nav1/Form.vue'));
+  }); 
+};
+
+const Table = resolve => {
+  require.ensure(['../components/nav1/Table.vue'], () => {
+      resolve(require('../components/nav1/Table.vue'));
+  }); 
+};
+const User = resolve => {
+  require.ensure(['../components/nav1/user.vue'], () => {
+      resolve(require('../components/nav1/user.vue'));
+  }); 
+};
+
+
+const Page4 = resolve => {
+  require.ensure(['../components/nav2/Page4.vue'], () => {
+      resolve(require('../components/nav2/Page4.vue'));
+  }); 
+};
+
+const Page5 = resolve => {
+  require.ensure(['../components/nav2/Page5.vue'], () => {
+      resolve(require('../components/nav2/Page5.vue'));
+  }); 
+};
+
+const Page6 = resolve => {
+  require.ensure(['../components/nav3/Page6.vue'], () => {
+      resolve(require('../components/nav3/Page6.vue'));
   }); 
 };
 
 const Main = resolve => {
-  require.ensure(['../components/page/Main.vue'], () => {
-      resolve(require('../components/page/Main.vue'));
+  require.ensure(['../components/Main.vue'], () => {
+      resolve(require('../components/Main.vue'));
   }); 
 };
 
-const Home = resolve => {
-  require.ensure(['../components/common/Home.vue'], () => {
-      resolve(require('../components/common/Home.vue'));
+const Error404 = resolve => {
+  require.ensure(['../components/404.vue'], () => {
+      resolve(require('../components/404.vue'));
   }); 
 };
 
@@ -49,6 +94,7 @@ const router = new Router({
       path: '/',
       name: 'HelloWorld',
       component: HelloWorld,
+      hidden: true,
       meta: {
         requiresAuth: true
       }
@@ -56,27 +102,71 @@ const router = new Router({
     {
       path: '/login',
       name: 'login',
-      component: Login
+      component: Login,
+      hidden: true
     },
     {
       path: '/register',
       name: 'register',
-      component: Register 
+      component: Register ,
+      hidden: true
     },
-    {
-      path: '/main',
-      component: Home,
-      children:[
-          {
-              path: '/',
-              component: Main
-          }
-      ]
-  },
+  //   {
+  //     path: '/main',
+  //     component: Home,
+  //     // children:[
+  //     //     {
+  //     //         path: '/',
+  //     //         component: Main
+  //     //     }
+  //     // ]
+  // },
+  {
+    path: '/',
+    component: Home,
+    name: '导航一',
+    iconCls: 'el-icon-message',//图标样式class
+    children: [
+        { path: '/main', component: Main, name: '主页', hidden: true },
+        { path: '/table', component: Table, name: 'Table' },
+        { path: '/form', component: Form, name: 'Form' },
+        { path: '/user', component: User, name: '列表' },
+    ]
+},
+{
+    path: '/',
+    component: Home,
+    name: '导航二',
+    iconCls: 'fa fa-id-card-o',
+    children: [
+        { path: '/page4', component: Page4, name: '页面4' },
+        { path: '/page5', component: Page5, name: '页面5' }
+    ]
+},
+{
+    path: '/',
+    component: Home,
+    name: '',
+    iconCls: 'fa fa-address-card',
+    leaf: true,//只有一个节点
+    children: [
+        { path: '/page6', component: Page6, name: '导航三' }
+    ]
+},
+{
+    path: '/',
+    component: Home,
+    name: 'Charts',
+    iconCls: 'fa fa-bar-chart',
+    children: [
+        { path: '/echarts', component: ECharts, name: 'echarts' }
+    ]
+},
     {
       path: '*',
       name: 'error',
-      component: Error404
+      component: Error404,
+      hidden: true
     }
   ]
 })
