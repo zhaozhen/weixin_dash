@@ -124,11 +124,11 @@ const router = new Router({
   {
     path: '/',
     component: Home,
-    name: '导航一',
+    name: '用户管理',
     iconCls: 'el-icon-message',//图标样式class
     children: [
-        { path: '/main', component: Main, name: '主页', hidden: true,meta:{requiresAuth:true} },
-        { path: '/table', component: Table, name: 'Table' ,meta:{requiresAuth:true}},
+        { path: '/main', component: Main, name: '公众号信息', hidden: true,meta:{requiresAuth:true} },
+        { path: '/table', component: Table, name: '登录人员' ,meta:{requiresAuth:true}},
         { path: '/form', component: Form, name: 'Form' ,meta:{requiresAuth:true}},
         { path: '/user', component: User, name: '列表' ,meta:{requiresAuth:true}},
     ]
