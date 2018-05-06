@@ -1,5 +1,6 @@
 <template>
     <div>
+        <img src="../assets/logo.png">
         <el-row>
             <el-col :span="10" :offset="7">
             <!-- el-tabs放在这里其实不合理，可以提到App.vue里面。然后引入Login组件和Register组件 -->
@@ -84,7 +85,7 @@ export default {
                                 this.$store.dispatch('UserLogin', token);
                                 this.$store.dispatch('UserName', username);
                                 //如果用户手动输入"/"那么会跳转到这里来，即this.$route.query.redirect有参数
-                                let redirectUrl = decodeURIComponent(this.$route.query.redirect || '/');
+                                let redirectUrl = decodeURIComponent(this.$route.query.redirect || '/main');
                                 //跳转到指定的路由
                                 this.$router.push({
                                     path: redirectUrl

@@ -127,39 +127,39 @@ const router = new Router({
     name: '导航一',
     iconCls: 'el-icon-message',//图标样式class
     children: [
-        { path: '/main', component: Main, name: '主页', hidden: true },
-        { path: '/table', component: Table, name: 'Table' },
-        { path: '/form', component: Form, name: 'Form' },
-        { path: '/user', component: User, name: '列表' },
+        { path: '/main', component: Main, name: '主页', hidden: true,meta:{requiresAuth:true} },
+        { path: '/table', component: Table, name: 'Table' ,meta:{requiresAuth:true}},
+        { path: '/form', component: Form, name: 'Form' ,meta:{requiresAuth:true}},
+        { path: '/user', component: User, name: '列表' ,meta:{requiresAuth:true}},
     ]
 },
 {
     path: '/',
     component: Home,
     name: '导航二',
-    iconCls: 'fa fa-id-card-o',
+    iconCls: 'el-icon-circle-plus',
     children: [
-        { path: '/page4', component: Page4, name: '页面4' },
-        { path: '/page5', component: Page5, name: '页面5' }
+        { path: '/page4', component: Page4, name: '页面4',meta:{requiresAuth:true} },
+        { path: '/page5', component: Page5, name: '页面5' ,meta:{requiresAuth:true}}
     ]
 },
 {
     path: '/',
     component: Home,
-    name: '',
-    iconCls: 'fa fa-address-card',
-    leaf: true,//只有一个节点
+    name: '导航三',
+    iconCls: 'el-icon-service',
+    // leaf: true,//只有一个节点
     children: [
-        { path: '/page6', component: Page6, name: '导航三' }
+        { path: '/page6', component: Page6, name: '导航三',meta:{requiresAuth:true} }
     ]
 },
 {
     path: '/',
     component: Home,
     name: 'Charts',
-    iconCls: 'fa fa-bar-chart',
+    iconCls: 'el-icon-location-outline',
     children: [
-        { path: '/echarts', component: ECharts, name: 'echarts' }
+        { path: '/echarts', component: ECharts, name: 'echarts' ,meta:{requiresAuth:true}}
     ]
 },
     {

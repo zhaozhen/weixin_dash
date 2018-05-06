@@ -6,7 +6,7 @@
 			</el-col>
 			<el-col :span="10">
 				<div class="tools" @click.prevent="collapse">
-					<i class="fa fa-align-justify"></i>
+					<i :class="collapsed?'el-icon-document':'el-icon-tickets'"></i>
 				</div>
 			</el-col>
 			<el-col :span="4" class="userinfo">
@@ -75,10 +75,10 @@
 	export default {
 		data() {
 			return {
-				sysName:'滴滴',
+				sysName:'微信 DASH',
 				collapsed:false,
-				sysUserName: '',
-				sysUserAvatar: '',
+				sysUserName: '无名氏',
+				sysUserAvatar: 'http://img.taopic.com/uploads/allimg/110729/1830-110H916410651.jpg',
 				form: {
 					name: '',
 					region: '',
@@ -109,13 +109,10 @@
 				this.$confirm('确认退出吗?', '提示', {
 					//type: 'warning'
 				}).then(() => {
-					sessionStorage.removeItem('user');
+					this.$store.dispatch('UserLogout');
 					_this.$router.push('/login');
 				}).catch(() => {
-
 				});
-
-
 			},
 			//折叠导航栏
 			collapse:function(){
@@ -132,15 +129,12 @@
 				this.sysUserName = user.name || '';
 				this.sysUserAvatar = user.avatar || '';
 			}
-
 		}
 	}
-
 </script>
 
 <style scoped lang="scss">
 	@import '../../static/css/scss/vars.scss';
-	
 	.container {
 		position: absolute;
 		top: 0px;
@@ -214,6 +208,7 @@
 				// bottom: 0px;
 				.el-menu{
 					height: 100%;
+					width: 230px;
 				}
 				.collapsed{
 					width:60px;
@@ -228,7 +223,6 @@
 						height:auto;
 						display:none;
 					}
-
 				}
 			}
 			.menu-collapsed{
