@@ -55,10 +55,10 @@ export default {
         console.log(data);
         return instance.post('/api/signin', data); 
     },
-    // //获取用户
-    // getUser(){
-    //     return instance.get('/api/user');
-    // },
+    //获取用户
+    getUsers(data){
+        return instance.get('/api/users',data);
+    },
     // //删除用户
     // delUser(data){
     //     return instance.post('/api/delUser', data);

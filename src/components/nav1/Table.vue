@@ -106,7 +106,8 @@
 
 <script>
 	import util from '../../../static/js/util'
-	//import NProgress from 'nprogress'
+	import api from '../../axios.js'
+	import NProgress from 'nprogress'
 	// import { getUserListPage, removeUser, batchRemoveUser, editUser, addUser } from '../../api/api';
 
 	export default {
@@ -168,11 +169,14 @@
 			//获取用户列表
 			getUsers() {
 				let para = {
-					page: this.page,
+					// page: this.page,
 					name: this.filters.name
 				};
 				this.listLoading = true;
-				//NProgress.start();
+				NProgress.start();
+				api.getUsers(para).then(({ data }) => {
+					console.log(data)
+				});
 				// getUserListPage(para).then((res) => {
 				// 	this.total = res.data.total;
 				// 	this.users = res.data.users;
