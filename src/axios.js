@@ -52,12 +52,11 @@ export default {
     },
     //用户登录
     userLogin(data){
-        console.log(data);
         return instance.post('/api/signin', data); 
     },
     //获取用户
     getUsers(data){
-        return instance.get('/api/users',data);
+        return instance.get('/api/users',{params:data});
     },
     // //删除用户
     // delUser(data){

@@ -25,11 +25,11 @@
 			</el-table-column>
 			<el-table-column prop="sex" label="性别" width="100" :formatter="formatSex" sortable>
 			</el-table-column>
-			<el-table-column prop="age" label="年龄" width="100" sortable>
+			<el-table-column prop="createdAt" label="注册时间" width="200" sortable>
 			</el-table-column>
-			<el-table-column prop="birth" label="生日" width="120" sortable>
+			<el-table-column prop="role" label="角色" width="120" :formatter="formatRole" sortable>
 			</el-table-column>
-			<el-table-column prop="addr" label="地址" min-width="180" sortable>
+			<el-table-column prop="location" label="地址" min-width="200" sortable>
 			</el-table-column>
 			<el-table-column label="操作" width="150">
 				<template slot-scope="scope">
@@ -108,7 +108,6 @@
 	import util from '../../../static/js/util'
 	import api from '../../axios.js'
 	import NProgress from 'nprogress'
-	// import { getUserListPage, removeUser, batchRemoveUser, editUser, addUser } from '../../api/api';
 
 	export default {
 		data() {
@@ -162,6 +161,9 @@
 			formatSex: function (row, column) {
 				return row.sex == 1 ? '男' : row.sex == 0 ? '女' : '未知';
 			},
+			formatRole:function(row,column){
+				return row.role==1 ? '管理员' : '普通用户';
+			},
 			handleCurrentChange(val) {
 				this.page = val;
 				this.getUsers();
@@ -169,20 +171,18 @@
 			//获取用户列表
 			getUsers() {
 				let para = {
-					// page: this.page,
+					page: this.page,
 					name: this.filters.name
 				};
 				this.listLoading = true;
 				NProgress.start();
 				api.getUsers(para).then(({ data }) => {
 					console.log(data)
+					this.total = data.data.total;
+					this.users = data.data.users;
+					this.listLoading = false;
+					NProgress.done();
 				});
-				// getUserListPage(para).then((res) => {
-				// 	this.total = res.data.total;
-				// 	this.users = res.data.users;
-				// 	this.listLoading = false;
-				// 	//NProgress.done();
-				// });
 			},
 			//删除
 			handleDel: function (index, row) {
