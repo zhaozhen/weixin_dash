@@ -75,7 +75,7 @@
 		</el-dialog>
 
 		<!--新增界面-->
-		<el-dialog title="新增" v-model="addFormVisible" :close-on-click-modal="false">
+		<el-dialog title="新增" v-model="addFormVisible" :visible.sync="addFormVisible" :close-on-click-modal="false">
 			<el-form :model="addForm" label-width="80px" :rules="addFormRules" ref="addForm">
 				<el-form-item label="姓名" prop="name">
 					<el-input v-model="addForm.name" auto-complete="off"></el-input>
@@ -86,15 +86,21 @@
 						<el-radio class="radio" :label="0">女</el-radio>
 					</el-radio-group>
 				</el-form-item>
+				<el-form-item label="注册时间">
+					<el-date-picker type="date" placeholder="选择日期" v-model="addForm.birth"></el-date-picker>
+				</el-form-item>
+				<el-form-item label="角色" >
+					<el-radio-group v-model="addForm.role">
+					<el-radio class="radio" disabled :label="1">管理员</el-radio>
+					<el-radio class="radio" :label="0">用户</el-radio>
+					</el-radio-group>
+				</el-form-item>
 				<el-form-item label="年龄">
 					<el-input-number v-model="addForm.age" :min="0" :max="200"></el-input-number>
 				</el-form-item>
-				<el-form-item label="生日">
-					<el-date-picker type="date" placeholder="选择日期" v-model="addForm.birth"></el-date-picker>
-				</el-form-item>
 				<el-form-item label="地址">
 					<el-input type="textarea" v-model="addForm.addr"></el-input>
-				</el-form-item>
+				</el-form-item>				
 			</el-form>
 			<div slot="footer" class="dialog-footer">
 				<el-button @click.native="addFormVisible = false">取消</el-button>
@@ -143,13 +149,17 @@
 				addFormRules: {
 					name: [
 						{ required: true, message: '请输入姓名', trigger: 'blur' }
-					]
+					],
+					sex:[
+						{ required: true, message: '请选择性别', trigger: 'change' }
+					],
 				},
 				//新增界面数据
 				addForm: {
 					name: '',
-					sex: -1,
+					sex: 0,
 					age: 0,
+					role:0,
 					birth: '',
 					addr: ''
 				}
