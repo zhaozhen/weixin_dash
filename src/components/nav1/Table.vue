@@ -47,7 +47,7 @@
 		</el-col>
 
 		<!--编辑界面-->
-		<el-dialog title="编辑" v-model="editFormVisible" :close-on-click-modal="false">
+		<el-dialog title="编辑" v-model="editFormVisible"  :visible.sync="editFormVisible" :close-on-click-modal="false">
 			<el-form :model="editForm" label-width="80px" :rules="editFormRules" ref="editForm">
 				<el-form-item label="姓名" prop="name">
 					<el-input v-model="editForm.name" auto-complete="off"></el-input>
@@ -58,14 +58,20 @@
 						<el-radio class="radio" :label="0">女</el-radio>
 					</el-radio-group>
 				</el-form-item>
-				<el-form-item label="年龄">
-					<el-input-number v-model="editForm.age" :min="0" :max="200"></el-input-number>
+			<el-form-item label="注册时间" prop="createdAt">
+					<el-date-picker type="date" placeholder="选择日期" v-model="editForm.createdAt"></el-date-picker>
 				</el-form-item>
-				<el-form-item label="生日">
-					<el-date-picker type="date" placeholder="选择日期" v-model="editForm.birth"></el-date-picker>
+				<el-form-item label="角色"  prop="role">
+					<el-radio-group v-model="editForm.role">
+					<el-radio class="radio" disabled :label="3">管理员</el-radio>
+					<el-radio class="radio" :label="1">用户</el-radio>
+					</el-radio-group>
+				</el-form-item>
+				<el-form-item label="年龄" prop="age">
+					<el-input-number v-model="editForm.score" :min="0" :max="200"></el-input-number>
 				</el-form-item>
 				<el-form-item label="地址">
-					<el-input type="textarea" v-model="editForm.addr"></el-input>
+					<el-input type="textarea" v-model="editForm.location"></el-input>
 				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
@@ -80,26 +86,26 @@
 				<el-form-item label="姓名" prop="name">
 					<el-input v-model="addForm.name" auto-complete="off"></el-input>
 				</el-form-item>
-				<el-form-item label="性别">
+				<el-form-item label="性别" prop="sex">
 					<el-radio-group v-model="addForm.sex">
 						<el-radio class="radio" :label="1">男</el-radio>
 						<el-radio class="radio" :label="0">女</el-radio>
 					</el-radio-group>
 				</el-form-item>
-				<el-form-item label="注册时间">
-					<el-date-picker type="date" placeholder="选择日期" v-model="addForm.birth"></el-date-picker>
+				<el-form-item label="注册时间" prop="createdAt">
+					<el-date-picker type="date" placeholder="选择日期" v-model="addForm.createdAt"></el-date-picker>
 				</el-form-item>
-				<el-form-item label="角色" >
+				<el-form-item label="角色"  prop="role">
 					<el-radio-group v-model="addForm.role">
-					<el-radio class="radio" disabled :label="1">管理员</el-radio>
-					<el-radio class="radio" :label="0">用户</el-radio>
+					<el-radio class="radio" disabled :label="3">管理员</el-radio>
+					<el-radio class="radio" :label="1">用户</el-radio>
 					</el-radio-group>
 				</el-form-item>
-				<el-form-item label="年龄">
+				<el-form-item label="年龄" prop="age">
 					<el-input-number v-model="addForm.age" :min="0" :max="200"></el-input-number>
 				</el-form-item>
-				<el-form-item label="地址">
-					<el-input type="textarea" v-model="addForm.addr"></el-input>
+				<el-form-item label="地址" prop="location">
+					<el-input type="textarea" v-model="addForm.location"></el-input>
 				</el-form-item>				
 			</el-form>
 			<div slot="footer" class="dialog-footer">
@@ -111,205 +117,246 @@
 </template>
 
 <script>
-	import util from '../../../static/js/util'
-	import api from '../../axios.js'
-	import NProgress from 'nprogress'
+import util from "../../../static/js/util";
+import api from "../../axios.js";
+import NProgress from "nprogress";
 
-	export default {
-		data() {
-			return {
-				filters: {
-					name: ''
-				},
-				users: [],
-				total: 0,
-				page: 1,
-				listLoading: false,
-				sels: [],//列表选中列
+export default {
+  data() {
+    return {
+      filters: {
+        name: ""
+      },
+      users: [],
+      total: 0,
+      page: 1,
+      listLoading: false,
+      sels: [], //列表选中列
 
-				editFormVisible: false,//编辑界面是否显示
-				editLoading: false,
-				editFormRules: {
-					name: [
-						{ required: true, message: '请输入姓名', trigger: 'blur' }
-					]
-				},
-				//编辑界面数据
-				editForm: {
-					id: 0,
-					name: '',
-					sex: -1,
-					age: 0,
-					birth: '',
-					addr: ''
-				},
+      editFormVisible: false, //编辑界面是否显示
+      editLoading: false,
+      editFormRules: {
+        name: [{ required: true, message: "请输入姓名", trigger: "blur" }],
+        sex: [{ required: true, message: "请选择性别", trigger: "change" }],
+        createdAt: [{ required: true, message: "请输入时间", trigger: "blur" }],
+        location: [{ required: true, message: "请输入地址", trigger: "blur" }]
+      },
+      //编辑界面数据
+      editForm: {
+        name: "",
+        sex: 0,
+        age: 0,
+        role: 1,
+        createdAt: "",
+        location: ""
+      },
 
-				addFormVisible: false,//新增界面是否显示
-				addLoading: false,
-				addFormRules: {
-					name: [
-						{ required: true, message: '请输入姓名', trigger: 'blur' }
-					],
-					sex:[
-						{ required: true, message: '请选择性别', trigger: 'change' }
-					],
-				},
-				//新增界面数据
-				addForm: {
-					name: '',
-					sex: 0,
-					age: 0,
-					role:0,
-					birth: '',
-					addr: ''
-				}
+      addFormVisible: false, //新增界面是否显示
+      addLoading: false,
+      addFormRules: {
+        name: [{ required: true, message: "请输入姓名", trigger: "blur" }],
+        sex: [{ required: true, message: "请选择性别", trigger: "change" }],
+        createdAt: [{ required: true, message: "请输入时间", trigger: "blur" }],
+        location: [{ required: true, message: "请输入地址", trigger: "blur" }]
+      },
+      //新增界面数据
+      addForm: {
+        name: "",
+        sex: 0,
+        age: 0,
+        role: 1,
+        createdAt: "",
+        location: ""
+      }
+    };
+  },
+  methods: {
+    //性别显示转换
+    formatSex: function(row, column) {
+      return row.sex == 1 ? "男" : row.sex == 0 ? "女" : "未知";
+    },
+    formatRole: function(row, column) {
+      return row.role == 1 ? "管理员" : "普通用户";
+    },
+    handleCurrentChange(val) {
+      this.page = val;
+      this.getUsers();
+    },
+    //获取用户列表
+    getUsers() {
+      let para = {
+        page: this.page,
+        name: this.filters.name
+      };
+      this.listLoading = true;
+      NProgress.start();
+      api.getUsers(para).then(({ data }) => {
+        this.listLoading = false;
+        NProgress.done();
+        if (data.errNo > 0) {
+          this.$message({
+            type: "info",
+            message: data.msg
+          });
+          return;
+        } else {
+          this.total = data.data.total;
+          this.users = data.data.users;
+        }
+      });
+    },
+    //删除
+    handleDel: function(index, row) {
+      this.$confirm("确认删除该记录吗?", "提示", {
+        type: "warning"
+      })
+        .then(() => {
+          this.listLoading = true;
+          //NProgress.start();
+		  let para = { id: row.id };
+		  
+          this.$message({
+            type: "info",
+            message: "删除成功！"
+		  });
+		  this.listLoading = false;
+          // removeUser(para).then((res) => {
+          // 	this.listLoading = false;
+          // 	//NProgress.done();
+          // 	this.$message({
+          // 		message: '删除成功',
+          // 		type: 'success'
+          // 	});
+          // 	this.getUsers();
+          // });
+        })
+        .catch(() => {});
+    },
+    //显示编辑界面
+    handleEdit: function(index, row) {
+      console.log(row);
+      this.editFormVisible = true;
+      this.editForm = Object.assign({}, row);
+    },
+    //显示新增界面
+    handleAdd: function() {
+      this.addFormVisible = true;
+      this.addForm = {
+        name: "",
+        sex: -1,
+        age: 0,
+        createdAt: "",
+        location: ""
+      };
+    },
+    //编辑
+    editSubmit: function() {
+      this.$refs.editForm.validate(valid => {
+        if (valid) {
+          this.$confirm("确认提交吗？", "提示", {}).then(() => {
+            this.editLoading = true;
+            //NProgress.start();
+            let para = Object.assign({}, this.editForm);
+            // para.birth =
+            //   !para.birth || para.birth == ""
+            //     ? ""
+            //     : util.formatDate.format(new Date(para.birth), "yyyy-MM-dd hh:mm:ss");
 
-			}
-		},
-		methods: {
-			//性别显示转换
-			formatSex: function (row, column) {
-				return row.sex == 1 ? '男' : row.sex == 0 ? '女' : '未知';
-			},
-			formatRole:function(row,column){
-				return row.role==1 ? '管理员' : '普通用户';
-			},
-			handleCurrentChange(val) {
-				this.page = val;
-				this.getUsers();
-			},
-			//获取用户列表
-			getUsers() {
-				let para = {
-					page: this.page,
-					name: this.filters.name
-				};
-				this.listLoading = true;
-				NProgress.start();
-				api.getUsers(para).then(({ data }) => {
-					console.log(data)
-					this.total = data.data.total;
-					this.users = data.data.users;
-					this.listLoading = false;
-					NProgress.done();
-				});
-			},
-			//删除
-			handleDel: function (index, row) {
-				this.$confirm('确认删除该记录吗?', '提示', {
-					type: 'warning'
-				}).then(() => {
-					this.listLoading = true;
-					//NProgress.start();
-					let para = { id: row.id };
-					// removeUser(para).then((res) => {
-					// 	this.listLoading = false;
-					// 	//NProgress.done();
-					// 	this.$message({
-					// 		message: '删除成功',
-					// 		type: 'success'
-					// 	});
-					// 	this.getUsers();
-					// });
-				}).catch(() => {
+            api.addAndUpdateUser(para).then(({ data }) => {
+              this.listLoading = false;
+              NProgress.done();
+              if (data.errNo > 0) {
+                this.$message({
+                  type: "info",
+                  message: data.msg
+                });
+                return;
+              } else {
+                this.$refs["editForm"].resetFields();
+                this.editFormVisible = false;
+                this.getUsers();
+              }
+            });
+          });
+        }
+      });
+    },
+    //新增
+    addSubmit: function() {
+      this.$refs.addForm.validate(valid => {
+        if (valid) {
+          this.$confirm("确认提交吗？", "提示", {}).then(() => {
+            this.addLoading = true;
+            NProgress.start();
+            let para = Object.assign({}, this.addForm);
+            console.log(para);
+            // para.createdAt =
+            //   !para.createdAt || para.createdAt == ""
+            //     ? ""
+            //     : util.formatDate.format(
+            //         new Date(para.createdAt),
+            //         "yyyy-MM-dd hh:mm:ss"
+            //       );
+            api.addAndUpdateUser(para).then(({ data }) => {
+              this.listLoading = false;
+              NProgress.done();
+              if (data.errNo > 0) {
+                this.$message({
+                  type: "info",
+                  message: data.msg
+                });
+              } else {
+                this.$refs["addForm"].resetFields();
+                this.addFormVisible = false;
+                this.getUsers();
+              }
+            });
+          });
+        }
+      });
+    },
+    selsChange: function(sels) {
+      this.sels = sels;
+    },
+    //批量删除
+    batchRemove: function() {
+      var ids = this.sels.map(item => item.id).toString();
+      this.$confirm("确认删除选中记录吗？", "提示", {
+        type: "warning"
+      })
+        .then(() => {
+          this.listLoading = true;
+          NProgress.start();
+          let para = { ids: ids };
 
-				});
-			},
-			//显示编辑界面
-			handleEdit: function (index, row) {
-				this.editFormVisible = true;
-				this.editForm = Object.assign({}, row);
-			},
-			//显示新增界面
-			handleAdd: function () {
-				this.addFormVisible = true;
-				this.addForm = {
-					name: '',
-					sex: -1,
-					age: 0,
-					birth: '',
-					addr: ''
-				};
-			},
-			//编辑
-			editSubmit: function () {
-				this.$refs.editForm.validate((valid) => {
-					if (valid) {
-						this.$confirm('确认提交吗？', '提示', {}).then(() => {
-							this.editLoading = true;
-							//NProgress.start();
-							let para = Object.assign({}, this.editForm);
-							para.birth = (!para.birth || para.birth == '') ? '' : util.formatDate.format(new Date(para.birth), 'yyyy-MM-dd');
-							// editUser(para).then((res) => {
-							// 	this.editLoading = false;
-							// 	//NProgress.done();
-							// 	this.$message({
-							// 		message: '提交成功',
-							// 		type: 'success'
-							// 	});
-							// 	this.$refs['editForm'].resetFields();
-							// 	this.editFormVisible = false;
-							// 	this.getUsers();
-							// });
-						});
-					}
-				});
-			},
-			//新增
-			addSubmit: function () {
-				this.$refs.addForm.validate((valid) => {
-					if (valid) {
-						this.$confirm('确认提交吗？', '提示', {}).then(() => {
-							this.addLoading = true;
-							//NProgress.start();
-							let para = Object.assign({}, this.addForm);
-							para.birth = (!para.birth || para.birth == '') ? '' : util.formatDate.format(new Date(para.birth), 'yyyy-MM-dd');
-							// addUser(para).then((res) => {
-							// 	this.addLoading = false;
-							// 	//NProgress.done();
-							// 	this.$message({
-							// 		message: '提交成功',
-							// 		type: 'success'
-							// 	});
-							// 	this.$refs['addForm'].resetFields();
-							// 	this.addFormVisible = false;
-							// 	this.getUsers();
-							// });
-						});
-					}
-				});
-			},
-			selsChange: function (sels) {
-				this.sels = sels;
-			},
-			//批量删除
-			batchRemove: function () {
-				var ids = this.sels.map(item => item.id).toString();
-				this.$confirm('确认删除选中记录吗？', '提示', {
-					type: 'warning'
-				}).then(() => {
-					this.listLoading = true;
-					//NProgress.start();
-					let para = { ids: ids };
-					// batchRemoveUser(para).then((res) => {
-					// 	this.listLoading = false;
-					// 	//NProgress.done();
-					// 	this.$message({
-					// 		message: '删除成功',
-					// 		type: 'success'
-					// 	});
-					// 	this.getUsers();
-					// });
-				}).catch(() => {
+          this.$message({
+            type: "info",
+            message: "删除成功！"
+          });
 
-				});
-			}
-		},
-		mounted() {
-			this.getUsers();
-		}
-	}
-
+          this.listLoading = false;
+          NProgress.done();
+          //   setTimeout(function() {
+          //     this.listLoading = false;
+          //     NProgress.done();
+          //   }, 2000);
+          // batchRemoveUser(para).then((res) => {
+          // 	this.listLoading = false;
+          // 	//NProgress.done();
+          // 	this.$message({
+          // 		message: '删除成功',
+          // 		type: 'success'
+          // 	});
+          // 	this.getUsers();
+          // });
+        })
+        .catch(() => {});
+    }
+  },
+  mounted() {
+    this.getUsers();
+  }
+};
 </script>
 
 <style >

@@ -58,6 +58,9 @@ export default {
     getUsers(data){
         return instance.get('/api/users',{params:data});
     },
+    addAndUpdateUser(data){
+        return instance.post('/api/user',data);
+    },
     // //删除用户
     // delUser(data){
     //     return instance.post('/api/delUser', data);
