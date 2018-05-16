@@ -61,6 +61,9 @@ export default {
     addAndUpdateUser(data){
         return instance.post('/api/user',data);
     },
+    getKeyReplys(data){
+        return instance.get('/api/key_replys');
+    },
     // //删除用户
     // delUser(data){
     //     return instance.post('/api/delUser', data);

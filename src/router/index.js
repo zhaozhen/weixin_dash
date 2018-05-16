@@ -56,6 +56,11 @@ const User = resolve => {
   }); 
 };
 
+const KeyReply = resolve => {
+  require.ensure(['../components/nav1/KeyReply.vue'], () => {
+      resolve(require('../components/nav1/KeyReply.vue'));
+  }); 
+};
 
 const Page4 = resolve => {
   require.ensure(['../components/nav2/Page4.vue'], () => {
@@ -128,9 +133,11 @@ const router = new Router({
     iconCls: 'el-icon-message',//图标样式class
     children: [
         { path: '/main', component: Main, name: '公众号信息', hidden: true,meta:{requiresAuth:true} },
-        { path: '/table', component: Table, name: '登录人员' ,meta:{requiresAuth:true}},
+        // { path: '/table', component: Table, name: '登录人员' ,meta:{requiresAuth:true}},
+        { path: '/key_replay', component: KeyReply, name: '关键字回复' ,meta:{requiresAuth:true}},
         { path: '/form', component: Form, name: 'Form' ,meta:{requiresAuth:true}},
         { path: '/user', component: User, name: '列表' ,meta:{requiresAuth:true}},
+      
     ]
 },
 {
