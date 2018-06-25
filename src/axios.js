@@ -62,10 +62,13 @@ export default {
         return instance.post('/api/user',data);
     },
     getKeyReplys(data){
-        return instance.get('/api/key_replys');
+        return instance.get('/api/keyReplys');
     },
-    // //删除用户
-    // delUser(data){
-    //     return instance.post('/api/delUser', data);
-    // }
+    deleteKeyReply(data){
+        return instance.delete('/api/keyReply',data)
+    },
+    addAndUpdateKeyReply(data){
+        return instance.post('/api/keyReply',data)
+    }
+
 }
