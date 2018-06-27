@@ -27,7 +27,7 @@
 	KeywordsReplyMsgMusic = 4
 	KeywordsReplyMsgNews  = 5 -->
       <!-- 编辑页面 -->
-    	<el-dialog title="编辑" v-model="editFormVisible"  :visible.sync="editFormVisible" :close-on-click-modal="false">
+    	<el-dialog title="编辑" v-model="editFormVisible"  @open="openEditDialog()" :visible.sync="editFormVisible" :close-on-click-modal="false">
 			<el-form :model="editForm" label-width="70px" ref="editForm">
 				<el-form-item label="关键字" prop="key">
 					<el-input v-model="editForm.key" auto-complete="off"></el-input>
@@ -36,8 +36,8 @@
 					<el-radio-group v-model="editForm.msg_type">
 						<el-radio class="radio" :label="0">文字</el-radio>
 						<el-radio class="radio" :label="1">图片</el-radio>
-            <el-radio class="radio" :label="2">声音</el-radio>
-            <el-radio class="radio" :label="3">视频</el-radio>
+            <el-radio class="radio" disabled :label="2">声音(sorry)</el-radio>
+            <el-radio class="radio" disabled :label="3">视频(和图片类似)</el-radio>
             <el-radio class="radio" :label="4">音乐</el-radio>
             <el-radio class="radio" :label="5">图文消息</el-radio>
 					</el-radio-group>
@@ -45,23 +45,60 @@
   
 
         <!-- 文字 -->
-        <el-form-item label="内容" prop="value">
+        <el-form-item v-if="wz" label="内容" prop="value">
 					<el-input v-model="editForm.value"></el-input>
 				</el-form-item>
 
-       <el-form-item label="图片" prop="value">
+        <!-- 图片 -->
+        <el-upload
+          v-if="tp"
+          class="avatar-uploader"
+          :show-file-list="false"
+          action="http://localhost:8023/api/upload"
+          :on-success="handleAvatarSuccess"
+          :before-upload="beforeAvatarUpload">
+          <img v-if="editForm.value" :src="editForm.value" class="avatar">
+          <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+        </el-upload>
+
+        <el-form-item v-if="yy" label="Title" prop="value">
 					<el-input v-model="editForm.value"></el-input>
 				</el-form-item>
 
-<el-upload
-  class="avatar-uploader"
-  :show-file-list="false"
-  action="https://jsonplaceholder.typicode.com/posts/"
-  :on-success="handleAvatarSuccess"
-  :before-upload="beforeAvatarUpload">
-  <img v-if="editForm.imageUrl" :src="editForm.imageUrl" class="avatar">
-  <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-</el-upload>
+       <el-form-item v-if="yy" label="Description" prop="value">
+					<el-input v-model="editForm.value"></el-input>
+				</el-form-item>
+
+        <el-form-item v-if="yy" label="MusicURL" prop="value">
+					<el-input v-model="editForm.value"></el-input>
+				</el-form-item>
+
+
+     <el-table
+      v-if="tw"
+      :data="tableData"
+      >
+      <el-table-column
+        prop="title"
+        label="标题"
+        width="180">
+      </el-table-column>
+      <el-table-column
+        prop="description"
+        label="描述"
+        width="180">
+      </el-table-column>
+      <el-table-column
+        prop="picUrl"
+        label="图片地址">
+      </el-table-column>
+      <el-table-column
+        prop="url"
+        label="跳转地址">
+      </el-table-column>
+    </el-table>
+
+
 
 		</el-form>
 			<div slot="footer" class="dialog-footer">
@@ -86,7 +123,10 @@ export default {
       //   filters: {
       //     name: ""
       //   },   
-      
+      wz: false,
+      tp:false,
+      yy:false,
+      tw:true,
       editFormVisible: false, //编辑界面是否显示
       editLoading: false,
       editForm: {
@@ -153,6 +193,10 @@ export default {
     selsChange: function(sels) {
       this.sels = sels;
     },
+    openEditDialog:function(){
+      //通过editForm的值控制显示的字段
+      console.log(this.editForm.value);
+    },
     handleEdit: function(index, row) {
       this.editFormVisible = true;
       this.editForm = Object.assign({}, row);
@@ -160,7 +204,7 @@ export default {
      //图片上传
     handleAvatarSuccess(res, file) {
       console.log(file)
-      this.imageUrl = URL.createObjectURL(file.raw);
+      this.editForm.value = URL.createObjectURL(file.raw);
       },
     beforeAvatarUpload(file) {
       console.log(file)
