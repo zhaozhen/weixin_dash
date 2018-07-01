@@ -133,7 +133,7 @@ const router = new Router({
     iconCls: 'el-icon-message',//图标样式class
     children: [
         { path: '/main', component: Main, name: '公众号信息', hidden: true,meta:{requiresAuth:true} },
-        // { path: '/table', component: Table, name: '登录人员' ,meta:{requiresAuth:true}},
+        { path: '/table', component: Table, name: '登录人员' ,meta:{requiresAuth:true}},
         { path: '/key_replay', component: KeyReply, name: '关键字回复' ,meta:{requiresAuth:true}},
         { path: '/form', component: Form, name: 'Form' ,meta:{requiresAuth:true}},
         { path: '/user', component: User, name: '列表' ,meta:{requiresAuth:true}},

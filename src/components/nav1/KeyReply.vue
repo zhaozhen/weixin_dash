@@ -1,5 +1,21 @@
 <template>
 	<section>
+
+    <el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
+			<el-form :inline="true" :model="filters">
+				<el-form-item>
+					<el-input v-model="filters.key" placeholder="关键字"></el-input>
+				</el-form-item>
+				<el-form-item>
+					<el-button type="primary" v-on:click="getKeyReplys">查询</el-button>
+				</el-form-item>
+				<el-form-item>
+					<el-button type="primary" @click="handleAdd">新增</el-button>
+				</el-form-item>
+			</el-form>
+		</el-col>
+
+
 		<!--列表-->
 		<el-table :data="keyReplies" highlight-current-row v-loading="listLoading" @selection-change="selsChange" style="width: 100%;">
 			<el-table-column type="selection" width="55">
@@ -33,7 +49,7 @@
 					<el-input v-model="editForm.key" auto-complete="off"></el-input>
 				</el-form-item>
 				<el-form-item label="回复类型">
-					<el-radio-group v-model="editForm.msg_type">
+					<el-radio-group v-model="editForm.msg_type" @change="subShow">
 						<el-radio class="radio" :label="0">文字</el-radio>
 						<el-radio class="radio" :label="1">图片</el-radio>
             <el-radio class="radio" disabled :label="2">声音(sorry)</el-radio>
@@ -45,13 +61,13 @@
   
 
         <!-- 文字 -->
-        <el-form-item v-if="wz" label="内容" prop="value">
+        <el-form-item v-show="wz" label="内容" prop="value">
 					<el-input v-model="editForm.value"></el-input>
 				</el-form-item>
 
         <!-- 图片 -->
         <el-upload
-          v-if="tp"
+          v-show="tp"
           class="avatar-uploader"
           :show-file-list="false"
           action="http://localhost:8023/api/upload"
@@ -61,21 +77,21 @@
           <i v-else class="el-icon-plus avatar-uploader-icon"></i>
         </el-upload>
 
-        <el-form-item v-if="yy" label="Title" prop="value">
+        <el-form-item v-show="yy" label="Title" prop="value">
 					<el-input v-model="editForm.value"></el-input>
 				</el-form-item>
 
-       <el-form-item v-if="yy" label="Description" prop="value">
+       <el-form-item v-show="yy" label="Description" prop="value">
 					<el-input v-model="editForm.value"></el-input>
 				</el-form-item>
 
-        <el-form-item v-if="yy" label="MusicURL" prop="value">
+        <el-form-item v-show="yy" label="MusicURL" prop="value">
 					<el-input v-model="editForm.value"></el-input>
 				</el-form-item>
 
 
      <el-table
-      v-if="tw"
+      v-show="tw"
       :data="tableData"
       >
       <el-table-column
@@ -120,13 +136,13 @@ import NProgress from "nprogress";
 export default {
   data() {
     return {
-      //   filters: {
-      //     name: ""
-      //   },   
-      wz: false,
-      tp:false,
-      yy:false,
-      tw:true,
+        filters: {
+          key: ""
+        },   
+      wz:false,//文字
+      tp:false, //图片
+      yy:false, //音乐
+      tw:false,//图文
       editFormVisible: false, //编辑界面是否显示
       editLoading: false,
       editForm: {
@@ -137,7 +153,10 @@ export default {
       keyReplies: [],
       total: 0,
       page: 1,
-      listLoading: false
+      listLoading: false,
+
+
+      tableData:[]
     };
   },
   methods: {
@@ -168,10 +187,48 @@ export default {
           break;
       }
     },
+    handleAdd:function(){
+
+    },
+    subShow:function(value){
+    // console.log(value);
+    switch (value){
+      case 0:
+      this.wz=true;
+      this.tp=false;
+      this.yy=false;
+      this.tw=false;
+      break;
+      case 1:
+      this.tp=true;
+      this.wz=false;
+      this.yy=false;
+      this.tw=false;
+      break;
+      case 4:
+      this.yy=true;
+      this.wz=false;
+      this.tp=false;
+      this.tw=false;
+      break;
+      case 5:
+      this.tw=true;
+      this.yy=false;
+      this.wz=false;
+      this.tp=false;
+      break;
+      default :
+      this.wz=true;
+      this.tp=false;
+      this.yy=false;
+      this.tw=false;
+      break;
+    }
+    },
     getKeyReplys() {
       let para = {
-        // page: this.page,
-        // name: this.filters.name
+        page: this.page,
+        name: this.filters.key
       };
       this.listLoading = true;
       NProgress.start();
@@ -195,7 +252,7 @@ export default {
     },
     openEditDialog:function(){
       //通过editForm的值控制显示的字段
-      console.log(this.editForm.value);
+      this.subShow(this.editForm.msg_type);
     },
     handleEdit: function(index, row) {
       this.editFormVisible = true;
