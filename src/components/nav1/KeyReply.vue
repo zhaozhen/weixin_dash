@@ -26,7 +26,7 @@
 			</el-table-column>
 			<el-table-column prop="msg_type" label="回复类型" width="150" :formatter="formatMsgType" sortable>
 			</el-table-column>
-            <el-table-column prop="value" label="关键字的内容" width="200" sortable>
+            <el-table-column prop="value" label="关键字的内容"  :formatter="formatMsgValue" width="200" sortable>
 			</el-table-column>
 			<el-table-column label="操作" width="150">
 				<template slot-scope="scope">
@@ -62,7 +62,7 @@
 
         <!-- 文字 -->
         <el-form-item v-show="wz" label="内容" prop="value">
-					<el-input v-model="editForm.value"></el-input>
+					<el-input v-model="editForm.msg"></el-input>
 				</el-form-item>
 
         <!-- 图片 -->
@@ -73,26 +73,28 @@
           action="http://localhost:8023/api/upload"
           :on-success="handleAvatarSuccess"
           :before-upload="beforeAvatarUpload">
-          <img v-if="editForm.value" :src="editForm.value" class="avatar">
+          <img v-if="editForm.image" :src="editForm.image" class="avatar">
           <i v-else class="el-icon-plus avatar-uploader-icon"></i>
         </el-upload>
 
-        <el-form-item v-show="yy" label="Title" prop="value">
-					<el-input v-model="editForm.value"></el-input>
+        <!-- 音乐 -->
+        <el-form-item v-show="yy" label="音乐名称" prop="value">
+					<el-input v-model="editForm.title"></el-input>
 				</el-form-item>
 
-       <el-form-item v-show="yy" label="Description" prop="value">
-					<el-input v-model="editForm.value"></el-input>
+       <el-form-item v-show="yy" label="音乐描述" prop="value">
+					<el-input v-model="editForm.desc"></el-input>
 				</el-form-item>
 
-        <el-form-item v-show="yy" label="MusicURL" prop="value">
-					<el-input v-model="editForm.value"></el-input>
+        <el-form-item v-show="yy" label="音乐地址" prop="value">
+					<el-input v-model="editForm.music"></el-input>
 				</el-form-item>
 
 
+    <!-- 图文 -->
      <el-table
       v-show="tw"
-      :data="tableData"
+      :data="twData"
       >
       <el-table-column
         prop="title"
@@ -105,16 +107,20 @@
         width="180">
       </el-table-column>
       <el-table-column
-        prop="picUrl"
+        prop="pic_url"
         label="图片地址">
       </el-table-column>
       <el-table-column
         prop="url"
         label="跳转地址">
       </el-table-column>
+      <el-table-column label="操作" width="150">
+				<template slot-scope="scope">
+					<el-button size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+					<el-button type="danger" size="small" @click="handleDel(scope.$index, scope.row)">删除</el-button>
+				</template>
+			</el-table-column>
     </el-table>
-
-
 
 		</el-form>
 			<div slot="footer" class="dialog-footer">
@@ -148,15 +154,18 @@ export default {
       editForm: {
         msg_type: 0,
         key: "",
-        value: ""
+        value: "",
+        msg:"",
+        image:"",
+        title:"",
+        desc:"",
+        music:"",
       },
       keyReplies: [],
       total: 0,
       page: 1,
       listLoading: false,
-
-
-      tableData:[]
+      twData:[]
     };
   },
   methods: {
@@ -183,6 +192,23 @@ export default {
           break;
         default:
           console.log(row.msg_type);
+          return "default";
+          break;
+      }
+    },
+    formatMsgValue:function(row, colum){
+       switch (row.msg_type) {
+        case 0:
+        case 1:
+          return row.value;
+          break;
+        case 4:
+          return row.key_reply_music_vo.title;
+          break;
+        case 5:
+          return "图文消息内容点编辑查看";
+          break;
+        default:
           return "default";
           break;
       }
@@ -253,6 +279,24 @@ export default {
     openEditDialog:function(){
       //通过editForm的值控制显示的字段
       this.subShow(this.editForm.msg_type);
+    
+       switch (this.editForm.msg_type) {
+        case 0:
+          this.editForm.msg=this.editForm.value;
+          break;
+        case 1:
+          this.editForm.image=this.editForm.value;
+          break;
+        case 4:
+          this.editForm.title=this.editForm.key_reply_music_vo.title;
+          this.editForm.desc=this.editForm.key_reply_music_vo.description;
+          this.editForm.music=this.editForm.key_reply_music_vo.music_url;
+          break;
+        case 5:
+          this.twData=this.editForm.key_reply_news_vos;
+          break;
+      }
+
     },
     handleEdit: function(index, row) {
       this.editFormVisible = true;
