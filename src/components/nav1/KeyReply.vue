@@ -43,7 +43,7 @@
 	KeywordsReplyMsgMusic = 4
 	KeywordsReplyMsgNews  = 5 -->
       <!-- 编辑页面 -->
-    	<el-dialog title="编辑" v-model="editFormVisible"  @open="openEditDialog()" :visible.sync="editFormVisible" :close-on-click-modal="false">
+    	<el-dialog title="编辑" v-model="editFormVisible"  @open="openEditDialog()" @close="closeEditDialog()"  :visible.sync="editFormVisible" :close-on-click-modal="false">
 			<el-form :model="editForm" label-width="70px" ref="editForm">
 				<el-form-item label="关键字" prop="key">
 					<el-input v-model="editForm.key" auto-complete="off"></el-input>
@@ -62,7 +62,7 @@
 
         <!-- 文字 -->
         <el-form-item v-show="wz" label="内容" prop="value">
-					<el-input v-model="editForm.msg"></el-input>
+					<el-input v-model="editForm.msg" prop="msg" ></el-input>
 				</el-form-item>
 
         <!-- 图片 -->
@@ -73,21 +73,21 @@
           action="http://localhost:8023/api/upload"
           :on-success="handleAvatarSuccess"
           :before-upload="beforeAvatarUpload">
-          <img v-if="editForm.image" :src="editForm.image" class="avatar">
+          <img v-if="editForm.image" :src="editForm.image" prop="image" class="avatar">
           <i v-else class="el-icon-plus avatar-uploader-icon"></i>
         </el-upload>
 
         <!-- 音乐 -->
         <el-form-item v-show="yy" label="音乐名称" prop="value">
-					<el-input v-model="editForm.title"></el-input>
+					<el-input v-model="editForm.title" prop="title"></el-input>
 				</el-form-item>
 
        <el-form-item v-show="yy" label="音乐描述" prop="value">
-					<el-input v-model="editForm.desc"></el-input>
+					<el-input v-model="editForm.desc"prop="desc" ></el-input>
 				</el-form-item>
 
         <el-form-item v-show="yy" label="音乐地址" prop="value">
-					<el-input v-model="editForm.music"></el-input>
+					<el-input v-model="editForm.music" prop="music"></el-input>
 				</el-form-item>
 
 
@@ -116,8 +116,8 @@
       </el-table-column>
       <el-table-column label="操作" width="150">
 				<template slot-scope="scope">
-					<el-button size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-					<el-button type="danger" size="small" @click="handleDel(scope.$index, scope.row)">删除</el-button>
+					<el-button size="small" @click="handleEditSub(scope.$index, scope.row)">编辑</el-button>
+					<el-button type="danger" size="small" @click="handleDelSub(scope.$index, scope.row)">删除</el-button>
 				</template>
 			</el-table-column>
     </el-table>
@@ -129,6 +129,37 @@
 			</div>
 		</el-dialog>
 
+
+<!-- sub页面的编辑 -->
+<el-dialog title="编辑" v-model="editFormSubVisible"  :visible.sync="editFormSubVisible" :close-on-click-modal="false">
+			<el-form :model="editFormSub" label-width="70px" ref="editForm">
+				<el-form-item label="标题" prop="title">
+					<el-input v-model="editFormSub.title" auto-complete="off"></el-input>
+				</el-form-item>
+		</el-form>
+
+    <el-form :model="editFormSub" label-width="70px" ref="editForm">
+				<el-form-item label="描述" prop="description">
+					<el-input v-model="editFormSub.description" auto-complete="off"></el-input>
+				</el-form-item>
+		</el-form>
+
+    <el-form :model="editFormSub" label-width="70px" ref="editForm">
+				<el-form-item label="图片地址" prop="pic_url">
+					<el-input v-model="editFormSub.pic_url" auto-complete="off"></el-input>
+				</el-form-item>
+		</el-form>
+
+    <el-form :model="editFormSub" label-width="70px" ref="editForm">
+				<el-form-item label="跳转地址" prop="url">
+					<el-input v-model="editFormSub.url" auto-complete="off"></el-input>
+				</el-form-item>
+		</el-form>
+			<div slot="footer" class="dialog-footer">
+				<el-button @click.native="editFormSubVisible = false">取消</el-button>
+				<el-button type="primary" @click.native="editSubmitSub" :loading="editLoading">提交</el-button>
+			</div>
+		</el-dialog>
 
 	</section>
 </template>
@@ -151,8 +182,9 @@ export default {
       tw:false,//图文
       editFormVisible: false, //编辑界面是否显示
       editLoading: false,
+      editFormSubVisible:false,
       editForm: {
-        msg_type: 0,
+        msg_type: -1,
         key: "",
         value: "",
         msg:"",
@@ -165,7 +197,13 @@ export default {
       total: 0,
       page: 1,
       listLoading: false,
-      twData:[]
+      twData:[],
+      editFormSub:{
+        title:"",
+        description:"",
+        url:"",
+        pic_url:"",
+      }
     };
   },
   methods: {
@@ -268,26 +306,35 @@ export default {
           });
           return;
         } else {
-          //   this.total = data.data.total;
           this.keyReplies = data.data.keyplies;
         }
       });
     },
-    selsChange: function(sels) {
+    selsChange(sels) {
       this.sels = sels;
+    },
+    closeEditDialog(){
+      try {
+        // this.$refs["editForm"].resetFields();
+　　     this.twData='';
+      } catch (e) {//这种情况没必要 try-catch
+      } 
+      // this.$refs["editForm"].resetFields();
     },
     openEditDialog:function(){
       //通过editForm的值控制显示的字段
       this.subShow(this.editForm.msg_type);
-    
        switch (this.editForm.msg_type) {
         case 0:
+          this.twData=null;
           this.editForm.msg=this.editForm.value;
           break;
         case 1:
+          this.twData=null;
           this.editForm.image=this.editForm.value;
           break;
         case 4:
+          this.twData=null;
           this.editForm.title=this.editForm.key_reply_music_vo.title;
           this.editForm.desc=this.editForm.key_reply_music_vo.description;
           this.editForm.music=this.editForm.key_reply_music_vo.music_url;
@@ -296,16 +343,68 @@ export default {
           this.twData=this.editForm.key_reply_news_vos;
           break;
       }
-
     },
     handleEdit: function(index, row) {
       this.editFormVisible = true;
       this.editForm = Object.assign({}, row);
     },
+    editSubmit:function(){
+      //拼床合适的参数
+      var para = Object.assign({}, this.editForm);
+      switch (para.msg_type){
+          case 0:
+          para.value= para.msg;
+          break;
+          case 1:
+          para.value=para.image;
+          break;
+          case 4:
+          para.key_reply_music_vo.title=this.editForm.title;
+          para.key_reply_music_vo.description=this.editForm.desc;
+          para.key_reply_music_vo.music_url=this.editForm.music;
+          break;
+          case 5:
+          para.key_reply_news_vos=this.twData;
+          break;
+      };
+      this.listLoading = true;
+      NProgress.start();
+      api.addAndUpdateKeyReply(para).then(({ data }) => {
+        this.listLoading = false;
+        NProgress.done();
+        if (data.errNo > 0) {
+          this.$message({
+            type: "info",
+            message: data.msg
+          });
+          return;
+        } else {
+          this.$refs["editForm"].resetFields();
+          this.editFormVisible = false;
+          this.getKeyReplys();
+        }
+      });
+
+    },
+    handleEditSub: function(index, row) {
+      this.editFormSubVisible = true;
+      this.editFormSub = Object.assign({}, row);
+    },
+    editSubmitSub:function(){
+      var _this=this;
+      _this.twData.forEach(function(element,index){
+      if(element.id==_this.editFormSub.id){
+        console.log(_this.editFormSub.id);
+           _this.$set(_this.twData, index, _this.editFormSub)
+        }
+      })
+    },
      //图片上传
     handleAvatarSuccess(res, file) {
       console.log(file)
-      this.editForm.value = URL.createObjectURL(file.raw);
+      // this.editForm.image = URL.createObjectURL(file.raw);
+      this.editForm.image = file.response.filePath;
+      // this.
       },
     beforeAvatarUpload(file) {
       console.log(file)
