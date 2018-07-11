@@ -43,7 +43,7 @@
 	KeywordsReplyMsgMusic = 4
 	KeywordsReplyMsgNews  = 5 -->
       <!-- 编辑页面 -->
-    	<el-dialog title="编辑" v-model="editFormVisible"  @open="openEditDialog()" @close="closeEditDialog()"  :visible.sync="editFormVisible" :close-on-click-modal="false">
+    	<el-dialog title="编辑" v-model="editFormVisible"  @open="openEditDialog()"  :visible.sync="editFormVisible" :close-on-click-modal="false">
 			<el-form :model="editForm" label-width="70px" ref="editForm">
 				<el-form-item label="关键字" prop="key">
 					<el-input v-model="editForm.key" auto-complete="off"></el-input>
@@ -108,11 +108,11 @@
       </el-table-column>
       <el-table-column
         prop="pic_url"
-        label="图片地址">
+        label="图片地址" :formatter="formateImageUrl">
       </el-table-column>
       <el-table-column
         prop="url"
-        label="跳转地址">
+        label="跳转地址" :formatter="formateImageUrl">
       </el-table-column>
       <el-table-column label="操作" width="150">
 				<template slot-scope="scope">
@@ -146,7 +146,7 @@
 
     <el-form :model="editFormSub" label-width="70px" ref="editForm">
 				<el-form-item label="图片地址" prop="pic_url">
-					<el-input v-model="editFormSub.pic_url" auto-complete="off"></el-input>
+					<el-input v-model="editFormSub.pic_url"  auto-complete="off"></el-input>
 				</el-form-item>
 		</el-form>
 
@@ -157,7 +157,7 @@
 		</el-form>
 			<div slot="footer" class="dialog-footer">
 				<el-button @click.native="editFormSubVisible = false">取消</el-button>
-				<el-button type="primary" @click.native="editSubmitSub" :loading="editLoading">提交</el-button>
+				<el-button type="primary" @click.native="editSubmitSub" :loading="editLoading">暂时保存</el-button>
 			</div>
 		</el-dialog>
 
@@ -189,6 +189,7 @@ export default {
         value: "",
         msg:"",
         image:"",
+        imageUrl:"",
         title:"",
         desc:"",
         music:"",
@@ -236,8 +237,10 @@ export default {
     },
     formatMsgValue:function(row, colum){
        switch (row.msg_type) {
-        case 0:
         case 1:
+        return "http://..."
+        break;
+        case 0:
           return row.value;
           break;
         case 4:
@@ -251,8 +254,25 @@ export default {
           break;
       }
     },
+    handleDel:function(value,value1,value2){
+      this.$message( {
+          message: '意外不意外？',
+          type: 'success'
+        });
+
+    },
+    handleDelSub:function(value,value1,value2){
+        this.$message( {
+          message: '震惊不震惊？',
+          type: 'warning'
+        });
+
+    },
     handleAdd:function(){
 
+    },
+    formateImageUrl:function(value){
+      return "http://....";
     },
     subShow:function(value){
     // console.log(value);
@@ -313,14 +333,6 @@ export default {
     selsChange(sels) {
       this.sels = sels;
     },
-    closeEditDialog(){
-      try {
-        // this.$refs["editForm"].resetFields();
-　　     this.twData='';
-      } catch (e) {//这种情况没必要 try-catch
-      } 
-      // this.$refs["editForm"].resetFields();
-    },
     openEditDialog:function(){
       //通过editForm的值控制显示的字段
       this.subShow(this.editForm.msg_type);
@@ -328,20 +340,20 @@ export default {
         case 0:
           this.twData=null;
           this.editForm.msg=this.editForm.value;
-          break;
+          // break;
         case 1:
           this.twData=null;
           this.editForm.image=this.editForm.value;
-          break;
+          // break;
         case 4:
           this.twData=null;
           this.editForm.title=this.editForm.key_reply_music_vo.title;
           this.editForm.desc=this.editForm.key_reply_music_vo.description;
           this.editForm.music=this.editForm.key_reply_music_vo.music_url;
-          break;
+          // break;
         case 5:
           this.twData=this.editForm.key_reply_news_vos;
-          break;
+          // break;
       }
     },
     handleEdit: function(index, row) {
@@ -356,7 +368,7 @@ export default {
           para.value= para.msg;
           break;
           case 1:
-          para.value=para.image;
+          para.value=para.imageUrl;
           break;
           case 4:
           para.key_reply_music_vo.title=this.editForm.title;
@@ -367,6 +379,7 @@ export default {
           para.key_reply_news_vos=this.twData;
           break;
       };
+
       this.listLoading = true;
       NProgress.start();
       api.addAndUpdateKeyReply(para).then(({ data }) => {
@@ -379,12 +392,10 @@ export default {
           });
           return;
         } else {
-          this.$refs["editForm"].resetFields();
           this.editFormVisible = false;
           this.getKeyReplys();
         }
       });
-
     },
     handleEditSub: function(index, row) {
       this.editFormSubVisible = true;
@@ -397,13 +408,14 @@ export default {
         console.log(_this.editFormSub.id);
            _this.$set(_this.twData, index, _this.editFormSub)
         }
-      })
+      });
+      this.editFormSubVisible = false;
     },
      //图片上传
     handleAvatarSuccess(res, file) {
       console.log(file)
-      // this.editForm.image = URL.createObjectURL(file.raw);
-      this.editForm.image = file.response.filePath;
+      this.editForm.image = URL.createObjectURL(file.raw);
+       this.editForm.imageUrl = file.response.filePath;
       // this.
       },
     beforeAvatarUpload(file) {
