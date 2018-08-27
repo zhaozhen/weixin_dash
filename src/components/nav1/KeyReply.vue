@@ -269,7 +269,10 @@ export default {
 
     },
     handleAdd:function(){
-
+           this.$message( {
+          message: '震惊不震惊？',
+          type: 'warning'
+        });
     },
     formateImageUrl:function(value){
       return "http://....";
