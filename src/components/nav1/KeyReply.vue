@@ -50,12 +50,12 @@
 				</el-form-item>
 				<el-form-item label="回复类型">
 					<el-radio-group v-model="editForm.msg_type" @change="subShow">
-						<el-radio class="radio" :label="0">文字</el-radio>
-						<el-radio class="radio" :label="1">图片</el-radio>
+						<el-radio class="radio" disabled :label="0">文字</el-radio>
+						<el-radio class="radio" disabled :label="1">图片</el-radio>
             <el-radio class="radio" disabled :label="2">声音(sorry)</el-radio>
             <el-radio class="radio" disabled :label="3">视频(和图片类似)</el-radio>
-            <el-radio class="radio" :label="4">音乐</el-radio>
-            <el-radio class="radio" :label="5">图文消息</el-radio>
+            <el-radio class="radio" disabled :label="4">音乐</el-radio>
+            <el-radio class="radio" disabled :label="5">图文消息</el-radio>
 					</el-radio-group>
 				</el-form-item>
   
